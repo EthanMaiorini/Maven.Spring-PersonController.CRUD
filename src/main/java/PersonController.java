@@ -12,30 +12,49 @@ public class PersonController {
     PersonRepository personRepository;
 
     @PostMapping("/people")
-    public ResponseEntity createPerson(@RequestBody Person p){
-        return new ResponseEntity(personRepository.save(p), HttpStatus.CREATED);
+    public ResponseEntity<Person> createPerson(@RequestBody Person p){
+        return new ResponseEntity<>(personRepository.save(p), HttpStatus.CREATED);
     }
 
     @GetMapping("/people/{id}")
-    public ResponseEntity getPerson(@PathVariable Long id){
-        return new ResponseEntity(personRepository.findOne(id),HttpStatus.OK);
+    public ResponseEntity<Person> getPerson(@PathVariable Long id){
+        Person person = personRepository.findOne(id);
+        if (person == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(person, HttpStatus.OK);
     }
 
     @GetMapping("/people")
-    public ResponseEntity getPersonList(){
+    public ResponseEntity<List<Person>> getPersonList(){
         List<Person> people = new ArrayList<>();
         personRepository.findAll().forEach(people::add);
+        if (people == null || people.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
        return new ResponseEntity<>(people, HttpStatus.OK);
     }
 
-    @PutMapping("/people")
-    public ResponseEntity updatePerson(@RequestBody Person p){
-        return new ResponseEntity(personRepository.save(p),HttpStatus.OK);
+    @PutMapping("/people/{id}")
+    public ResponseEntity<Person> updatePerson(@PathVariable Long id, @RequestBody Person p){
+        Person person = personRepository.findOne(id);
+        if (person == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        person.setFirst_name(p.getFirst_name());
+        person.setLast_name(p.getLast_name());
+        personRepository.save(person);
+        return new ResponseEntity<>(person,HttpStatus.OK);
     }
 
     @DeleteMapping("/people/{id}")
-    public ResponseEntity deletePerson(@PathVariable Long id){
+    public ResponseEntity<Person> deletePerson(@PathVariable Long id){
+        Person person = personRepository.findOne(id);
+
+        if (person == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
        personRepository.delete(id);
-       return new ResponseEntity(personRepository.findOne(id),HttpStatus.NO_CONTENT);
+       return new ResponseEntity<>(HttpStatus.OK);
     }
 }
