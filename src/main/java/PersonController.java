@@ -17,8 +17,8 @@ public class PersonController {
     }
 
     @GetMapping("/people/{id}")
-    public ResponseEntity<Person> getPerson(@PathVariable Long id){
-        Person person = personRepository.findOne(id);
+    public ResponseEntity<Person> getPerson(@PathVariable("id") Long id){
+        Person person = personRepository.findById(id).get();
         if (person == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -36,8 +36,8 @@ public class PersonController {
     }
 
     @PutMapping("/people/{id}")
-    public ResponseEntity<Person> updatePerson(@PathVariable Long id, @RequestBody Person p){
-        Person person = personRepository.findOne(id);
+    public ResponseEntity<Person> updatePerson(@PathVariable("id") Long id, @RequestBody Person p){
+        Person person = personRepository.findById(id).get();
         if (person == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -48,13 +48,13 @@ public class PersonController {
     }
 
     @DeleteMapping("/people/{id}")
-    public ResponseEntity<Person> deletePerson(@PathVariable Long id){
-        Person person = personRepository.findOne(id);
+    public ResponseEntity<Person> deletePerson(@PathVariable("id") Long id){
+        Person person = personRepository.findById(id).get();
 
         if (person == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-       personRepository.delete(id);
+       personRepository.delete(person);
        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
